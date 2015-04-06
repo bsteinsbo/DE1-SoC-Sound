@@ -1,0 +1,236 @@
+/*
+ *  Copyright (C) 2013 Steffen Trumtrar <s.trumtrar@pengutronix.de>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+#include "socfpga_cyclone5.dtsi"
+#include <dt-bindings/interrupt-controller/irq.h>
+
+/ {
+	model = "Terasic DE1-SoC";
+	compatible = "altr,socfpga-cyclone5", "altr,socfpga";
+
+	chosen {
+		bootargs = "console=ttyS0,115200";
+	};
+
+	memory {
+		name = "memory";
+		device_type = "memory";
+		reg = <0x0 0x40000000>; /* 1GB */
+	};
+
+	aliases {
+		/* this allow the ethaddr uboot environmnet variable contents
+		 * to be added to the gmac1 device tree blob.
+		 */
+		ethernet0 = &gmac1;
+	};
+
+	leds {
+		compatible = "gpio-leds";
+		user {
+			label = "user-led";
+			gpios = <&gpio1 24 0>;
+			linux,default-trigger = "heartbeat";
+		};
+#if 0
+		/* Always-on to enable HPS i2c */
+		/* The alternative is to model it as a regulator for codec */
+		i2c0mux {
+			label = "i2c0-mux";
+			gpios = <&gpio1 19 0>;
+			linux,default-trigger = "default-on";
+		};
+#endif
+	};
+
+        gpio_keys {
+		compatible = "gpio-keys";
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		user_pb {
+			label = "user_pb";
+			gpios = <&gpio1 25 0>;
+			linux,code = <28>;
+			gpio-key,wakeup;
+                };
+        };
+
+	soc {
+		gpio@ff708000 {
+			status = "okay";
+		};
+
+		gpio@ff709000 {
+			status = "okay";
+		};
+
+		gpio@ff70a000 {
+			status = "okay";
+		};
+	};
+
+        sound {
+	        compatible = "opencores,de1soc-wm8731-audio";
+		i2s-controller = <&i2s>;
+		audio-codec = <&codec>;
+		i2c-mux-gpio = <&gpio1 19 0>;
+        };
+
+	clk48: clk48 {
+		compatible = "fixed-clock";
+		#clock-cells = <0>;
+		clock-frequency  = <24576000>;
+		clock-output-names = "clk48";
+	};
+
+	clk44: clk44 {
+		compatible = "fixed-clock";
+		#clock-cells = <0>;
+		clock-frequency  = <33868800>;
+		clock-output-names = "clk44";
+	};
+
+	i2s: i2s@0 {
+		#sound-dai-cells = <1>;
+		compatible = "opencores,i2s";
+		reg = <0xff200000 0x20>, <0xff200020 0x20>;
+		clocks = <&clk44>, <&clk48>;
+		clock-names = "clk44", "clk48";
+		dmas = <&pdma 0>, <&pdma 1>;
+		dma-names = "tx", "rx";
+	};
+#if 0
+	seg7@20 {
+		compatible = "dummy";
+		reg = <0xff200020 0x20>;
+	};
+	vip2@100 {
+		compatible = "altr,vip-frame-reader-13.0", "altr,vip-frame-reader-9.1";
+		reg = <0xff200100 0x180>;
+		max-width = <0x400>;
+		max-height = <0x300>;
+		mem-word-width = <0x80>;
+		bits-per-color = <0x8>;
+	};
+#endif
+	sysid@2000 {
+		compatible = "altr,sysid-1.0";
+		reg = <0xff202000 0x8>;
+	};
+#if 0
+	led_pio@10040 {
+		compatible = "altr,pio-1.0";
+		reg = <0xff210040 0x10>;
+		altr,gpio-bank-width = <10>;
+		#gpio-cells = <1>;
+		gpio-controller;
+	};
+	dipsw_pio@10080 {
+		compatible = "altr,pio-1.0";
+		reg = <0xff210080 0x10>;
+		interrupts = <0 42 4>;
+		altr,gpio-bank-width = <10>;
+		altr,interrupt_type = <IRQ_TYPE_EDGE_BOTH>;
+		#gpio-cells = <1>;
+		gpio-controller;
+		#interrupt-cells = <1>;
+		interrupt-controller;
+	};
+	button_pio@100c0 {
+		compatible = "altr,pio-1.0";
+		reg = <0xff2100c0 0x10>;
+		interrupts = <0 41 4>;
+		altr,gpio-bank-width = <4>;
+		altr,interrupt_type = <IRQ_TYPE_EDGE_FALLING>;
+		#gpio-cells = <1>;
+		gpio-controller;
+		#interrupt-cells = <1>;
+		interrupt-controller;
+	};
+	jtag_uart@20000 {
+		compatible = "altr,juart-1.0";
+		reg = <0xff220000 0x8>;
+		interrupts = <0 40 4>;
+	};
+	/*
+	fpgadma: fifo {
+		#address-cells = <1>;
+		#size-cells = <1>;
+		compatible = "altr,fpga-dma";
+		reg = <0xff200060 0x20>, <0xc0001000 0x10>;
+		reg-names = "csr", "data";
+		dmas = <&pdma 2 &pdma 3>;
+		dma-names = "tx", "rx";
+	};
+	*/
+#endif
+};
+
+&osc1 {
+	clock-frequency = <25000000>;
+};
+
+&gmac1 {
+	status = "okay";
+	phy-mode = "rgmii";
+
+	rxd0-skew-ps = <0>;
+	rxd1-skew-ps = <0>;
+	rxd2-skew-ps = <0>;
+	rxd3-skew-ps = <0>;
+	txen-skew-ps = <0>;
+	txc-skew-ps = <2600>;
+	rxdv-skew-ps = <0>;
+	rxc-skew-ps = <2000>;
+};
+
+&usb1 {
+	status = "okay";
+};
+
+&mmc {
+	status = "okay";
+	num-slots = <0x1>;
+	supports-highspeed;
+	broken-cd;
+	altr,dw-mshc-ciu-div = <0x3>;
+	altr,dw-mshc-sdr-timing = <0x0 0x3>;
+
+	slot@0 {
+		reg = <0x0>;
+		bus-width = <0x4>;
+	};
+};
+
+&i2c0 {
+	status = "okay";
+	clock-frequency = <100000>;
+	speed-mode = <0>;
+
+	codec: wm8731@34 {
+		#sound-dai-cells = <0>;
+		compatible = "wlf,wm8731";
+		reg = <0x1a>;
+	};
+	adxl345@53 {
+		compatible = "adi,adxl34x";
+		reg = <0x53>;
+		interrupt-parent = <&gpio2>;
+		interrupts = <3 4>;
+	};
+};

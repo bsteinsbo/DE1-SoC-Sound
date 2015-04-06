@@ -1,0 +1,36 @@
+From 45d6ba5f2e5e9fa2bb6be13efbe8df5a33a9b67e Mon Sep 17 00:00:00 2001
+From: Bjarne Steinsbo <bsteinsbo@gmail.com>
+Date: Mon, 6 Apr 2015 15:51:57 +0200
+Subject: [PATCH] Add support for 32-bit word length.
+
+Signed-off-by: Bjarne Steinsbo <bsteinsbo@gmail.com>
+---
+ sound/soc/codecs/wm8731.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/sound/soc/codecs/wm8731.c b/sound/soc/codecs/wm8731.c
+index eebb328..688ee2e 100644
+--- a/sound/soc/codecs/wm8731.c
++++ b/sound/soc/codecs/wm8731.c
+@@ -357,6 +357,9 @@ static int wm8731_hw_params(struct snd_pcm_substream *substream,
+ 	case 24:
+ 		iface |= 0x0008;
+ 		break;
++	case 32:
++		iface |= 0x000c;
++		break;
+ 	}
+ 
+ 	wm8731_set_deemph(codec);
+@@ -531,7 +534,7 @@ static int wm8731_startup(struct snd_pcm_substream *substream,
+ #define WM8731_RATES SNDRV_PCM_RATE_8000_96000
+ 
+ #define WM8731_FORMATS (SNDRV_PCM_FMTBIT_S16_LE | SNDRV_PCM_FMTBIT_S20_3LE |\
+-	SNDRV_PCM_FMTBIT_S24_LE)
++	SNDRV_PCM_FMTBIT_S24_LE | SNDRV_PCM_FMTBIT_S32_LE)
+ 
+ static const struct snd_soc_dai_ops wm8731_dai_ops = {
+ 	.startup	= wm8731_startup,
+-- 
+1.9.1
+

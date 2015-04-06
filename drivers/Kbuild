@@ -1,0 +1,5 @@
+snd-soc-opencores-i2s-objs := opencores_i2s.o
+obj-m += snd-soc-opencores-i2s.o
+
+snd-soc-de1-soc-wm8731-objs := de1-soc-wm8731.o
+obj-m += snd-soc-de1-soc-wm8731.o
