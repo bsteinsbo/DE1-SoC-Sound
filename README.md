@@ -1,5 +1,5 @@
 This project contains IP cores and Linux ALSA SOC device drivers to play
-sound on Altera's DE1-SoC development board.
+sound on Terasic's DE1-SoC development board.
 
 The long-term goal of the project is to connect multiple external audio DACs
 to the DE1-SoC, connect the outputs of the DACs to multiple power amplifiers,
