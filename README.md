@@ -9,7 +9,7 @@ As a first step towards this goal, the project interfaces the built-in WM8731
 codec to an i2s interface.
 
 In parallel with the hardware development, Linux drivers for the ALSA SOC
-framework has also been developed.
+framework have also been developed.
 
 Random notes:
 
